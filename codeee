@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Sports System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            width: 380px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: #2c5364;
+        }
+
+        input {
+            width: 95%;
+            padding: 8px;
+            margin: 6px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #2c5364;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #203a43;
+        }
+
+        a {
+            color: #2c5364;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .info {
+            text-align: left;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="box" id="loginBox">
+    <h2>Sports System Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p>No account? <a onclick="showRegister()">Register Here</a></p>
+</div>
+
+<!-- REGISTER -->
+<div class="box hidden" id="registerBox">
+    <h2>Register Sportsman</h2>
+    <input type="text" id="sportsmanName" placeholder="Sportsman Name">
+    <input type="text" id="sportName" placeholder="Sport Name">
+    <input type="text" id="coachName" placeholder="Coach Name">
+    <input type="number" id="age" placeholder="Age">
+    <input type="text" id="teamName" placeholder="Team Name">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <p>Already have account? <a onclick="showLogin()">Login</a></p>
+</div>
+
+<!-- DASHBOARD -->
+<div class="box hidden" id="dashboardBox">
+    <h2>Sports Dashboard</h2>
+    <div class="info" id="userInfo"></div>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+    function showRegister() {
+        document.getElementById("loginBox").classList.add("hidden");
+        document.getElementById("registerBox").classList.remove("hidden");
+    }
+
+    function showLogin() {
+        document.getElementById("registerBox").classList.add("hidden");
+        document.getElementById("loginBox").classList.remove("hidden");
+    }
+
+    function register() {
+        let sportsmanName = document.getElementById("sportsmanName").value;
+        let sportName = document.getElementById("sportName").value;
+        let coachName = document.getElementById("coachName").value;
+        let age = document.getElementById("age").value;
+        let teamName = document.getElementById("teamName").value;
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+
+        if(sportsmanName=="" || sportName=="" || coachName=="" || age=="" || teamName=="" || email=="" || password=="") {
+            alert("Please fill all fields!");
+            return;
+        }
+
+        let user = {
+            sportsmanName,
+            sportName,
+            coachName,
+            age,
+            teamName,
+            email,
+            password
+        };
+
+        localStorage.setItem(email, JSON.stringify(user));
+        alert("Registration Successful!");
+        showLogin();
+    }
+
+    function login() {
+        let email = document.getElementById("loginEmail").value;
+        let password = document.getElementById("loginPassword").value;
+
+        let userData = localStorage.getItem(email);
+
+        if(userData == null) {
+            alert("User not found!");
+            return;
+        }
+
+        let user = JSON.parse(userData);
+
+        if(user.password === password) {
+            localStorage.setItem("loggedInUser", email);
+            showDashboard();
+        } else {
+            alert("Incorrect Password!");
+        }
+    }
+
+    function showDashboard() {
+        let email = localStorage.getItem("loggedInUser");
+        let user = JSON.parse(localStorage.getItem(email));
+
+        document.getElementById("loginBox").classList.add("hidden");
+        document.getElementById("registerBox").classList.add("hidden");
+        document.getElementById("dashboardBox").classList.remove("hidden");
+
+        document.getElementById("userInfo").innerHTML =
+            "<p><strong>Sportsman Name:</strong> " + user.sportsmanName + "</p>" +
+            "<p><strong>Sport Name:</strong> " + user.sportName + "</p>" +
+            "<p><strong>Coach Name:</strong> " + user.coachName + "</p>" +
+            "<p><strong>Age:</strong> " + user.age + "</p>" +
+            "<p><strong>Team Name:</strong> " + user.teamName + "</p>" +
+            "<p><strong>Email:</strong> " + user.email + "</p>";
+    }
+
+    function logout() {
+        localStorage.removeItem("loggedInUser");
+        location.reload();
+    }
+
+    window.onload = function() {
+        if(localStorage.getItem("loggedInUser")) {
+            showDashboard();
+        }
+    }
+</script>
+
+</body>
+</html>
